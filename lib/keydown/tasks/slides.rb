@@ -28,10 +28,19 @@ module Keydown
       scss_template = Tilt.new(File.join(Tasks.template_dir, '..', 'keydown.scss.erb'))
       scss = scss_template.render(context)
 
-      compass_path = File.join(Gem.loaded_specs['compass'].full_gem_path, 'frameworks', 'compass', 'stylesheets')
+      # compass_path = File.join(Gem.loaded_specs['compass'].full_gem_path, 'frameworks', 'compass', 'stylesheets')
+      
 
+      Compass.sass_engine_options[:load_paths].each do |path|
+        Sass.load_paths << path
+      end
+      
+      puts "load paths: ", Sass.load_paths
+
+      load_path = File.join(File.expand_path(File.dirname(__FILE__)), "features", "compass", "stylesheets")
+      
       create_file 'css/keydown.css', :force => true do
-        Sass::Engine.new(scss, :syntax => :scss, :load_paths => [compass_path]).render
+        Sass::Engine.new(scss, :syntax => :scss, :load_paths => [load_path]).render
       end
 
       presentation = file.gsub('md', 'html')
