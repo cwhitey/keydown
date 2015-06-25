@@ -7,7 +7,7 @@ module Keydown
     desc "slides FILE", "Convert a Keydown FILE into an HTML presentation"
 
     def slides(file)
-
+      
       file += '.md' unless file.match(/\.md$/)
 
       unless File.exist?(file)
@@ -37,14 +37,16 @@ module Keydown
       
       puts "load paths: ", Sass.load_paths
 
+      # get compass stylesheets from current directory
       load_path = File.join(File.expand_path(File.dirname(__FILE__)), "features", "compass", "stylesheets")
       
       create_file 'css/keydown.css', :force => true do
         Sass::Engine.new(scss, :syntax => :scss, :load_paths => [load_path]).render
       end
 
-      presentation = file.gsub('md', 'html')
-
+      presentation = File.basename(file, ".md") + "_presentation" + ".html"
+      puts "Generating html file: " + presentation
+      
       create_file presentation, :force => true do
         slide_deck.to_html
       end
